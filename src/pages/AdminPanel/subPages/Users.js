@@ -46,7 +46,7 @@ export default function Users() {
     ];
 
     return (
-        <Box sx={{}}>
+        <Box sx={{ p: 5 }}>
             <Typography color="white" variant="h3" align="center" mt={3} mb={5}>
                 Użytkownicy
             </Typography>

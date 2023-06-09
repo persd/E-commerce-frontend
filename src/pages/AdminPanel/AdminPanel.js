@@ -86,20 +86,6 @@ export default function AdminPanel() {
                 >
                     <Outlet />
                 </Grid>
-                {/* <Grid item>
-                    
-                   
-                </Grid> */}
-                {/* <Grid
-                    sm={8}
-                    lg={10}
-                    xs={12}
-                    item
-                    container
-                    backgroundColor={'#86868f'}
-                >
-                   
-                </Grid> */}
             </Grid>
         </Container>
     );
