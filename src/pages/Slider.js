@@ -1,7 +1,7 @@
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Grid, IconButton } from '@mui/material';
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 export default function Slider() {
     const { pathname } = useLocation();
     const tabs = ['/', '/kobieta', '/mezczyzna', '/dzieci'];
@@ -13,7 +13,6 @@ export default function Slider() {
             alignItems="center"
             sx={{ position: 'relative', height: '100%' }}
         >
-            <Outlet />
             <IconButton
                 aria-label="Next"
                 color="primary"

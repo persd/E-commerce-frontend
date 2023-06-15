@@ -1,6 +1,7 @@
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import ErrorPage from './ErrorPage';
+import Item from './components/Item';
 import SearchBar from './components/NavBar/SearchBar';
 import Layout from './layouts/Layout';
 import AdminPanel from './pages/AdminPanel/AdminPanel';
@@ -35,6 +36,7 @@ export default function App() {
                     path: 'dzieci',
                     element: <Kids />,
                 },
+                { path: 'product-name', element: <Item /> },
             ],
         },
         { path: 'login', element: <Login /> },

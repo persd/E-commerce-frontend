@@ -1,11 +1,11 @@
 import { ShoppingCart } from '@mui/icons-material';
-import { Avatar, Container, Grid, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';
-import theme from '../../theme/theme';
 import NavBarButton from './CustomButton';
 
 const NavItems = [
@@ -27,98 +27,91 @@ const NavItems = [
     },
 ];
 
+const NavBarContainer = styled(AppBar)({
+    height: '75px',
+    position: 'fixed',
+    variant: 'outlined',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+});
+const NavItemsContainer = styled(Toolbar)(({ theme }) => ({
+    maxWidth: '1500px',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '3rem',
+    [theme.breakpoints.down('md')]: {
+        display: 'none',
+    },
+}));
+
+const NavBarLogo = styled(Link)({
+    display: 'flex',
+    alignItems: 'center',
+});
+
+const LogoImage = styled('img')({
+    height: '75px',
+});
+
+const NavBarItems = styled(Box)({
+    display: 'flex',
+    gap: 20,
+});
+const SearchLinkBox = styled(Box)({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: '50px',
+});
+const SearchLink = styled(Typography)({
+    color: '#999999',
+    position: 'relative',
+});
+const SearchUnderline = styled(Typography)({
+    position: 'absolute',
+    left: 0,
+    bottom: '-3px',
+    borderBottom: '1px solid',
+    width: '60px',
+});
 export default function NavBar() {
     return (
-        <AppBar
-            position="static"
-            elevation={0}
-            variant="outlined"
-            sx={{ height: 'auto', p: '1rem' }}
-        >
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <Grid
-                        container
-                        justifyContent="space-between"
-                        alignItems="center"
+        <NavBarContainer>
+            <NavItemsContainer disableGutters>
+                <NavBarLogo to="/">
+                    <LogoImage src={logo} alt="Logo" />
+                </NavBarLogo>
+                <NavBarItems>
+                    <SearchLinkBox>
+                        <Link to="/search">
+                            <SearchLink>
+                                Szukaj
+                                <SearchUnderline />
+                            </SearchLink>
+                        </Link>
+                    </SearchLinkBox>
+                    {NavItems.map(({ value, to }) => (
+                        <NavBarButton
+                            key={to}
+                            variant="contained"
+                            color="secondary"
+                            value={value}
+                            component={Link}
+                            to={to}
+                        />
+                    ))}
+                    <IconButton
+                        component={Link}
+                        to="/koszyk"
+                        sx={{ padding: 0 }}
                     >
-                        <Grid item>
-                            <Link to="/">
-                                <Avatar
-                                    alt="Logo"
-                                    src={logo}
-                                    sx={{
-                                        height: '90px',
-                                        width: '90px',
-                                        display: { xs: 'none', md: 'flex' },
-                                    }}
-                                />
-                            </Link>
-                        </Grid>
-
-                        <Grid
-                            item
-                            gap={3}
-                            sx={{
-                                display: { xs: 'none', md: 'flex' },
-                            }}
-                            justifyContent="center"
-                            alignItems="center"
-                        >
-                            <Typography
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
-                            >
-                                <Link
-                                    to="/search"
-                                    style={{ paddingRight: '50px' }}
-                                >
-                                    <span
-                                        style={{
-                                            color: theme.palette.grey['400'],
-                                            display: 'flex',
-                                            position: 'relative',
-                                            width: '100%',
-                                        }}
-                                    >
-                                        Szukaj
-                                        <span
-                                            style={{
-                                                position: 'absolute',
-                                                left: 0,
-                                                bottom: '-3px',
-                                                width: '60px',
-                                                borderBottom: '1px solid',
-                                            }}
-                                        ></span>
-                                    </span>
-                                </Link>
-                            </Typography>
-                            {NavItems.map(({ value, to }) => (
-                                <NavBarButton
-                                    variant="contained"
-                                    color="secondary"
-                                    value={value}
-                                    component={Link}
-                                    to={to}
-                                />
-                            ))}
-                            <IconButton
-                                color="inherit"
-                                sx={{
-                                    backgroundColor:
-                                        theme.palette.secondary.main,
-                                }}
-                                component={Link}
-                                to="/koszyk"
-                            >
-                                <ShoppingCart fontSize="small" />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                </Toolbar>
-            </Container>
-        </AppBar>
+                        <ShoppingCart color="secondary" fontSize="medium" />
+                    </IconButton>
+                </NavBarItems>
+            </NavItemsContainer>
+        </NavBarContainer>
     );
 }

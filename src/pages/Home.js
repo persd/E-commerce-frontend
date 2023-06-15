@@ -4,7 +4,7 @@ import secondPhoto from './../assets/3.png';
 export default function Home() {
     return (
         <>
-            <Grid container>
+            <Grid>
                 <Grid
                     item
                     container
@@ -14,7 +14,11 @@ export default function Home() {
                     <img
                         src={secondPhoto}
                         alt="main"
-                        style={{ height: '100%', objectFit: 'cover' }}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                        }}
                     />
                 </Grid>
             </Grid>
