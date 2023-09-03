@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -8,35 +8,58 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { useFormik } from 'formik';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginValidationSchema } from '../../components/Validation/validationSchemas';
+import { useCustomSnackbar } from './../../store/CustomSnackbarContext';
 import theme from './../../theme/theme';
+
 export default function LoginForm() {
+    const navigate = useNavigate();
+    const customSnackbar = useCustomSnackbar();
+    const queryClient = useQueryClient();
     const [showPassword, setShowPassword] = useState(false);
+
+    const loginUser = useMutation({
+        mutationFn: () => {
+            try {
+                return axios.post('/api/login', { ...formik.values });
+            } catch (error) {
+                throw error;
+            }
+        },
+        onError: () => {
+            customSnackbar.show('error', 'Podano błędne dane logowania');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['check']);
+            navigate('/');
+            customSnackbar.show('success', 'Pomyślnie zalogowano');
+        },
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: loginValidationSchema,
+        onSubmit: loginUser.mutate,
+    });
     const handlePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevState) => ({ ...prevState, [name]: value }));
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log(formData);
-    };
     return (
         <Container maxWidth="sm">
             <Box p={2} align="center">
                 <Typography variant="h2" gutterBottom>
                     Logowanie
                 </Typography>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={formik.handleSubmit}>
                     <TextField
                         id="email"
                         name="email"
@@ -46,8 +69,14 @@ export default function LoginForm() {
                         margin="normal"
                         fullWidth
                         required
-                        onChange={handleInputChange}
-                        value={formData.login}
+                        value={formik.values.email}
+                        error={
+                            formik.touched.email &&
+                            Boolean(!!formik.errors.email)
+                        }
+                        helperText={formik.touched.email && formik.errors.email}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
                     />
                     <TextField
                         id="password"
@@ -58,8 +87,16 @@ export default function LoginForm() {
                         margin="normal"
                         fullWidth
                         required
-                        onChange={handleInputChange}
-                        value={formData.password}
+                        value={formik.values.password}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                            formik.touched.password &&
+                            Boolean(!!formik.errors.password)
+                        }
+                        helperText={
+                            formik.touched.password && formik.errors.password
+                        }
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">

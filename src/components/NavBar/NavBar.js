@@ -1,42 +1,18 @@
-import { ShoppingCart } from '@mui/icons-material';
-import { Box, IconButton, Typography } from '@mui/material';
-import AppBar from '@mui/material/AppBar';
+import { Box, Typography } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
 import { styled } from '@mui/material/styles';
-import React from 'react';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { React, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';
-import NavBarButton from './CustomButton';
-
-const NavItems = [
-    {
-        value: 'KOBIETA',
-        to: 'kobieta',
-    },
-    {
-        value: 'MĘŻCZYZNA',
-        to: 'mezczyzna',
-    },
-    {
-        value: 'DZIECI',
-        to: 'dzieci',
-    },
-    {
-        value: 'LOGIN',
-        to: 'login',
-    },
-];
-
-const NavBarContainer = styled(AppBar)({
-    height: '75px',
-    position: 'fixed',
-    variant: 'outlined',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-});
+import { useCustomSnackbar } from '../../store/CustomSnackbarContext';
+import { UserContext } from '../../store/UserContext';
+import CartButton from '../Cart/CartButton';
+import NavBarButton from '../UI/CustomButton';
 const NavItemsContainer = styled(Toolbar)(({ theme }) => ({
     maxWidth: '1500px',
+    position: 'relative',
     width: '100%',
     display: 'flex',
     alignItems: 'center',
@@ -46,16 +22,13 @@ const NavItemsContainer = styled(Toolbar)(({ theme }) => ({
         display: 'none',
     },
 }));
-
 const NavBarLogo = styled(Link)({
     display: 'flex',
     alignItems: 'center',
 });
-
 const LogoImage = styled('img')({
     height: '75px',
 });
-
 const NavBarItems = styled(Box)({
     display: 'flex',
     gap: 20,
@@ -64,54 +37,87 @@ const SearchLinkBox = styled(Box)({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight: '50px',
+    marginRight: '1rem',
 });
 const SearchLink = styled(Typography)({
     color: '#999999',
-    position: 'relative',
 });
-const SearchUnderline = styled(Typography)({
-    position: 'absolute',
-    left: 0,
-    bottom: '-3px',
-    borderBottom: '1px solid',
-    width: '60px',
-});
-export default function NavBar() {
+
+export default function NavBar(props) {
+    const { user, isLoading } = useContext(UserContext);
+
+    const customSnackbar = useCustomSnackbar();
+
+    const logOutMutation = useMutation({
+        mutationFn: () => {
+            return axios.post('/api/logout');
+        },
+        onError: () => {
+            customSnackbar.show('error', 'Wystąpił bład');
+        },
+        onSuccess: () => {
+            window.location.reload();
+        },
+    });
+    const NavItems = [
+        {
+            value: 'KOBIETA',
+            to: 'kobieta',
+        },
+        {
+            value: 'MĘŻCZYZNA',
+            to: 'mezczyzna',
+        },
+        {
+            value: 'DZIECI',
+            to: 'dzieci',
+        },
+        user
+            ? {
+                  value: 'KONTO',
+                  to: 'account/info',
+              }
+            : {
+                  value: 'LOGIN',
+                  to: 'login',
+              },
+    ];
+
     return (
-        <NavBarContainer>
-            <NavItemsContainer disableGutters>
-                <NavBarLogo to="/">
-                    <LogoImage src={logo} alt="Logo" />
-                </NavBarLogo>
-                <NavBarItems>
-                    <SearchLinkBox>
-                        <Link to="/search">
-                            <SearchLink>
-                                Szukaj
-                                <SearchUnderline />
-                            </SearchLink>
-                        </Link>
-                    </SearchLinkBox>
-                    {NavItems.map(({ value, to }) => (
-                        <NavBarButton
-                            key={to}
-                            variant="contained"
-                            color="secondary"
-                            value={value}
-                            component={Link}
-                            to={to}
-                        />
-                    ))}
-                    <IconButton
-                        component={Link}
-                        to="/koszyk"
-                        sx={{ padding: 0 }}
-                    >
-                        <ShoppingCart color="secondary" fontSize="medium" />
-                    </IconButton>
-                </NavBarItems>
-            </NavItemsContainer>
-        </NavBarContainer>
+        <NavItemsContainer disableGutters>
+            <NavBarLogo to="/">
+                <LogoImage src={logo} alt="Logo" />
+            </NavBarLogo>
+            <NavBarItems>
+                {!isLoading && (
+                    <>
+                        <SearchLinkBox>
+                            <Link to="/search">
+                                <SearchLink>Szukaj</SearchLink>
+                            </Link>
+                        </SearchLinkBox>
+                        {NavItems.map(({ value, to }) => (
+                            <NavBarButton
+                                key={to}
+                                variant="contained"
+                                color="secondary"
+                                value={value}
+                                component={Link}
+                                to={to}
+                            />
+                        ))}
+                        {user ? (
+                            <NavBarButton
+                                variant="contained"
+                                color="secondary"
+                                value="WYLOGUJ"
+                                onClick={() => logOutMutation.mutate()}
+                            />
+                        ) : null}
+                    </>
+                )}
+                <CartButton onShowCart={props.onShowCart} />
+            </NavBarItems>
+        </NavItemsContainer>
     );
 }

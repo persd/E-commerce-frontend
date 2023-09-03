@@ -20,7 +20,6 @@ export default function Login() {
 
     return (
         <Grid
-            item
             container
             alignItems="center"
             justifyContent="center"

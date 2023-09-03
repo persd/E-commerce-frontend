@@ -1,9 +1,15 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import axios from 'axios';
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import ErrorPage from './ErrorPage';
-import Item from './components/Item';
 import SearchBar from './components/NavBar/SearchBar';
 import Layout from './layouts/Layout';
+import ProductPage from './layouts/Main/ProductPage/ProductPage';
+import Account from './pages/Account/Account';
+import UserData from './pages/Account/UserData/UserData';
+import UserOrders from './pages/Account/UserOrders/UserOrders';
 import AdminPanel from './pages/AdminPanel/AdminPanel';
 import Orders from './pages/AdminPanel/subPages/Orders';
 import Panel from './pages/AdminPanel/subPages/Panel';
@@ -14,7 +20,13 @@ import Kids from './pages/Kids';
 import Login from './pages/Login/Login';
 import Man from './pages/Man';
 import Woman from './pages/Woman';
+import { CustomSnackbarProvider } from './store/CustomSnackbarContext';
+import { UserContextProvider } from './store/UserContext';
+const queryClient = new QueryClient();
 export default function App() {
+    axios.defaults.baseURL = 'http://localhost:5000';
+    axios.defaults.withCredentials = true;
+
     const router = createBrowserRouter([
         {
             element: <Layout />,
@@ -36,12 +48,28 @@ export default function App() {
                     path: 'dzieci',
                     element: <Kids />,
                 },
-                { path: 'product-name', element: <Item /> },
+                {
+                    path: 'account',
+                    element: <Account />,
+                    children: [
+                        {
+                            path: 'info',
+                            element: <UserData />,
+                            errorElement: <ErrorPage />,
+                        },
+                        {
+                            path: 'orders',
+                            element: <UserOrders />,
+                            errorElement: <ErrorPage />,
+                        },
+                    ],
+                },
+                { path: 'product/:id', element: <ProductPage /> },
             ],
         },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Login /> },
-        { path: 'search', element: <SearchBar /> },
+        { path: 'szukaj', element: <SearchBar /> },
         {
             element: <AdminPanel />,
             path: 'admin',
@@ -69,5 +97,14 @@ export default function App() {
             ],
         },
     ]);
-    return <RouterProvider router={router} />;
+    return (
+        <QueryClientProvider client={queryClient}>
+            <ReactQueryDevtools />
+            <CustomSnackbarProvider>
+                <UserContextProvider>
+                    <RouterProvider router={router} />
+                </UserContextProvider>
+            </CustomSnackbarProvider>
+        </QueryClientProvider>
+    );
 }

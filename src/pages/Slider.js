@@ -1,47 +1,84 @@
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
-import { Grid, IconButton } from '@mui/material';
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { IconButton, styled } from '@mui/material';
+import React, { useState } from 'react';
+import { animated, useTransition } from 'react-spring';
+import Image1 from './../assets/1.jpg';
+import Image2 from './../assets/2.jpg';
+import Image3 from './../assets/z3.jpg';
+import Image4 from './../assets/z4.jpg';
+
 export default function Slider() {
-    const { pathname } = useLocation();
-    const tabs = ['/', '/kobieta', '/mezczyzna', '/dzieci'];
+    const tabs = [Image1, Image2, Image3, Image4];
+    const [activeImage, setActiveImage] = useState(0);
+
+    const nextSlide = () => {
+        setActiveImage((prevIndex) =>
+            prevIndex === tabs.length - 1 ? 0 : prevIndex + 1
+        );
+    };
+
+    const prevSlide = () => {
+        setActiveImage((prevIndex) =>
+            prevIndex === 0 ? tabs.length - 1 : prevIndex - 1
+        );
+    };
+
+    const transitions = useTransition(activeImage, {
+        from: { opacity: 0, transform: 'translateX(100%)' },
+        enter: { opacity: 1, transform: 'translateX(0%)' },
+        leave: { opacity: 0, transform: 'translateX(-100%)' },
+    });
+
+    const Image = styled(animated.img)`
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        max-height: 400px;
+    `;
 
     return (
-        <Grid
-            container
-            justifyContent="center"
-            alignItems="center"
-            sx={{ position: 'relative', height: '100%' }}
-        >
+        <div style={{ position: 'relative' }}>
+            <div>
+                {transitions(
+                    (style, index) =>
+                        index === activeImage && (
+                            <Image
+                                key={index}
+                                src={tabs[index]}
+                                alt="banner"
+                                style={style}
+                            />
+                        )
+                )}
+            </div>
             <IconButton
                 aria-label="Next"
                 color="primary"
                 size="large"
-                sx={{
+                onClick={nextSlide}
+                style={{
                     position: 'absolute',
                     right: 0,
                     top: '50%',
                     transform: 'translateY(-50%)',
                 }}
-                component={Link}
-                to={tabs[tabs.indexOf(pathname) + 1] || tabs[0]}
             >
                 <ArrowForwardIos />
             </IconButton>
             <IconButton
                 aria-label="Prev"
                 color="primary"
-                sx={{
+                onClick={prevSlide}
+                size="large"
+                style={{
                     position: 'absolute',
                     left: 0,
                     top: '50%',
                     transform: 'translateY(-50%)',
                 }}
-                component={Link}
-                to={tabs[tabs.indexOf(pathname) - 1] || tabs[tabs.length - 1]}
             >
                 <ArrowBackIos />
             </IconButton>
-        </Grid>
+        </div>
     );
 }

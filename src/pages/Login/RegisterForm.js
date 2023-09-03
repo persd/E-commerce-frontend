@@ -1,57 +1,75 @@
-import React, { useState } from 'react';
-import {
-    Container,
-    Box,
-    Typography,
-    TextField,
-    Button,
-    FormControlLabel,
-    Checkbox,
-    InputAdornment,
-    IconButton,
-} from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Container,
+    FormControlLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Typography,
+} from '@mui/material';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useFormik } from 'formik';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { userDataValidationSchema } from '../../components/Validation/validationSchemas';
+import { useCustomSnackbar } from '../../store/CustomSnackbarContext';
 import theme from '../../theme/theme';
 export default function RegisterForm() {
+    const customSnackbar = useCustomSnackbar();
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    const handlePasswordVisibility = (event) => {
-        setShowPassword(!showPassword);
-    };
-    const handleConfirmPasswordVisibility = () => {
-        setShowConfirmPassword(!showConfirmPassword);
-    };
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        confirmPassword: '',
-        firstName: '',
-        lastName: '',
-        privacyPolicy: false,
+    const navigation = useNavigate();
+    const registerUser = useMutation({
+        mutationFn: async () => {
+            try {
+                return await axios.post('/api/register', { ...formik.values });
+            } catch (error) {
+                throw error;
+            }
+        },
+        onError: (error) => {
+            if (error.response.status === 409) {
+                customSnackbar.show('error', error.response.data);
+            } else {
+                customSnackbar.show(
+                    'error',
+                    'Wystąpił błąd podczas rejestracji'
+                );
+            }
+        },
+        onSuccess: () => {
+            navigation('/login');
+            customSnackbar.show('success', 'Pomyślnie zarejestrowano');
+        },
     });
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevState) => ({ ...prevState, [name]: value }));
+    const handlePasswordVisibility = () => {
+        setShowPassword((prev) => !prev);
     };
 
-    const handleCheckboxChange = (event) => {
-        const { name, checked } = event.target;
-        setFormData((prevState) => ({ ...prevState, [name]: checked }));
-    };
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log(formData);
-    };
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            firstName: '',
+            lastName: '',
+            password: '',
+            phoneNumber: '',
+            privacyPolicyAccept: false,
+        },
+        validationSchema: userDataValidationSchema,
+        onSubmit: registerUser.mutate,
+    });
+
     return (
         <Container maxWidth="sm">
             <Box p={2} mt={4}>
                 <Typography variant="h2" gutterBottom align="center">
                     Rejestracja
                 </Typography>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={formik.handleSubmit} autoComplete="off">
                     <TextField
                         id="email"
                         name="email"
@@ -61,7 +79,14 @@ export default function RegisterForm() {
                         margin="normal"
                         fullWidth
                         required
-                        onChange={handleInputChange}
+                        value={formik.values.email}
+                        error={
+                            formik.touched.email &&
+                            Boolean(!!formik.errors.email)
+                        }
+                        helperText={formik.touched.email && formik.errors.email}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
                     />
                     <TextField
                         id="password"
@@ -72,7 +97,16 @@ export default function RegisterForm() {
                         margin="normal"
                         fullWidth
                         required
-                        onChange={handleInputChange}
+                        value={formik.values.password}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                            formik.touched.password &&
+                            Boolean(!!formik.errors.password)
+                        }
+                        helperText={
+                            formik.touched.password && formik.errors.password
+                        }
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
@@ -90,35 +124,7 @@ export default function RegisterForm() {
                             ),
                         }}
                     />
-                    <TextField
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        label="Powtórz hasło"
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
-                        required
-                        onChange={handleInputChange}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={
-                                            handleConfirmPasswordVisibility
-                                        }
-                                        edge="end"
-                                    >
-                                        {showConfirmPassword ? (
-                                            <VisibilityOff />
-                                        ) : (
-                                            <Visibility />
-                                        )}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
+
                     <TextField
                         id="firstName"
                         name="firstName"
@@ -127,8 +133,16 @@ export default function RegisterForm() {
                         margin="normal"
                         fullWidth
                         required
-                        value={formData.firstName}
-                        onChange={handleInputChange}
+                        value={formik.values.firstName}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        error={
+                            formik.touched.firstName &&
+                            Boolean(!!formik.errors.firstName)
+                        }
+                        helperText={
+                            formik.touched.firstName && formik.errors.firstName
+                        }
                     />
                     <TextField
                         id="lastName"
@@ -138,16 +152,42 @@ export default function RegisterForm() {
                         margin="normal"
                         fullWidth
                         required
-                        value={formData.lastName}
-                        onChange={handleInputChange}
+                        value={formik.values.lastName}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        error={
+                            formik.touched.lastName &&
+                            Boolean(formik.errors.lastName)
+                        }
+                        helperText={
+                            formik.touched.lastName && formik.errors.lastName
+                        }
+                    />
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        label="Numer telefonu"
+                        value={formik.values.phoneNumber}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                            formik.touched.phoneNumber &&
+                            Boolean(formik.errors.phoneNumber)
+                        }
+                        helperText={
+                            formik.touched.phoneNumber &&
+                            formik.errors.phoneNumber
+                        }
                     />
                     <FormControlLabel
                         control={
                             <Checkbox
-                                id="privacyPolicy"
-                                name="privacyPolicy"
-                                checked={formData.privacyPolicy}
-                                onChange={handleCheckboxChange}
+                                id="privacyPolicyAccept"
+                                name="privacyPolicyAccept"
+                                checked={formik.values.privacyPolicyAccept}
+                                onChange={formik.handleChange}
                                 required
                             />
                         }
