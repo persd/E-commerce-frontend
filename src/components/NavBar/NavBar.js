@@ -60,18 +60,6 @@ export default function NavBar(props) {
         },
     });
     const NavItems = [
-        {
-            value: 'KOBIETA',
-            to: 'kobieta',
-        },
-        {
-            value: 'MĘŻCZYZNA',
-            to: 'mezczyzna',
-        },
-        {
-            value: 'DZIECI',
-            to: 'dzieci',
-        },
         user
             ? {
                   value: 'KONTO',
@@ -91,29 +79,44 @@ export default function NavBar(props) {
             <NavBarItems>
                 {!isLoading && (
                     <>
-                        <SearchLinkBox>
+                        <NavBarButton
+                            variant="contained"
+                            color="secondary"
+                            value="Szukaj"
+                            component={Link}
+                            to="search"
+                        />
+                        {/* <SearchLinkBox>
                             <Link to="/search">
                                 <SearchLink>Szukaj</SearchLink>
                             </Link>
-                        </SearchLinkBox>
-                        {NavItems.map(({ value, to }) => (
-                            <NavBarButton
-                                key={to}
-                                variant="contained"
-                                color="secondary"
-                                value={value}
-                                component={Link}
-                                to={to}
-                            />
-                        ))}
+                        </SearchLinkBox> */}
+
                         {user ? (
+                            <>
+                                <NavBarButton
+                                    variant="contained"
+                                    color="secondary"
+                                    value="KONTO"
+                                    component={Link}
+                                    to="account/info"
+                                />
+                                <NavBarButton
+                                    variant="contained"
+                                    color="secondary"
+                                    value="WYLOGUJ"
+                                    onClick={() => logOutMutation.mutate()}
+                                />
+                            </>
+                        ) : (
                             <NavBarButton
                                 variant="contained"
                                 color="secondary"
-                                value="WYLOGUJ"
-                                onClick={() => logOutMutation.mutate()}
+                                value="LOGIN"
+                                component={Link}
+                                to={'login'}
                             />
-                        ) : null}
+                        )}
                     </>
                 )}
                 <CartButton onShowCart={props.onShowCart} />

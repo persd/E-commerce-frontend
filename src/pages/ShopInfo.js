@@ -1,8 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import React from 'react';
-import Slider from '../components/UI/Slider';
 
-export default function Home() {
+export default function ShopInfo() {
     return (
         <Box
             sx={{
@@ -10,11 +9,10 @@ export default function Home() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4rem',
+                mt: '2rem',
             }}
         >
-            <Slider />
-
-            <Typography variant="h3">O nas</Typography>
+            <Typography variant="h3">Info</Typography>
             <Typography variant="body1">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut

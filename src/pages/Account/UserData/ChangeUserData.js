@@ -1,11 +1,8 @@
 import { Box, Button, TextField, Typography, styled } from '@mui/material';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { useFormik } from 'formik';
 import { React, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { userDataValidationSchema } from '../../../components/Validation/validationSchemas';
-import { useCustomSnackbar } from '../../../store/CustomSnackbarContext';
 
 const UserDataBox = styled(Box)({
     display: 'flex',
@@ -26,33 +23,9 @@ const ActionContainer = styled(Box)({
 });
 
 export default function ChangeUserData() {
-    const { data } = useOutletContext();
-    const customSnackbar = useCustomSnackbar();
-    const queryClient = useQueryClient();
+    const { data, editUserPersonalData } = useOutletContext();
+
     const [showEditPersonal, setShowEditPersonal] = useState(false);
-
-    const editUserPersonalData = useMutation({
-        mutationFn: async () => {
-            try {
-                return await axios.put('/api/account/info/edit', {
-                    ...formik.values,
-                });
-            } catch (error) {
-                throw error;
-            }
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries(['check']);
-            customSnackbar.show('success', data.data.message);
-        },
-        onError: (error) => {
-            customSnackbar.show('error', error.response.data);
-        },
-    });
-
-    const showEditPersonalHandler = () => {
-        setShowEditPersonal((prev) => !prev);
-    };
 
     const formik = useFormik({
         initialValues: {
@@ -62,8 +35,17 @@ export default function ChangeUserData() {
             phoneNumber: data?.phoneNumber || '',
         },
         validationSchema: userDataValidationSchema,
-        onSubmit: editUserPersonalData.mutate,
+        onSubmit: (values) => {
+            onSave(values);
+        },
     });
+    const onSave = (values) => {
+        editUserPersonalData.mutate(values);
+    };
+
+    const showEditPersonalHandler = () => {
+        setShowEditPersonal((prev) => !prev);
+    };
 
     return (
         <UserDataBox>

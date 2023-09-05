@@ -17,21 +17,22 @@ export default function Footer(props) {
                 <CustomFooterLinkBox
                     tittle="Moje konto"
                     links={[
-                        { link: '/rejestracja', text: 'Rejestracja' },
-                        { link: '/konto', text: 'Dane konta' },
-                        { link: '/zamowienia', text: 'Zamowienia' },
+                        { link: '/register', text: 'Rejestracja' },
+                        { link: '/login', text: 'Login' },
+                        { link: '/account/info', text: 'Dane konta' },
+                        { link: '/account/orders', text: 'Zamowienia' },
                     ]}
                 />
                 <CustomFooterLinkBox
                     tittle="O nas"
                     links={[
-                        { link: '/o-nas', text: 'O firime' },
+                        { link: '/dummy-info', text: 'O firime' },
                         {
-                            link: '/polityka-prywatnosci',
+                            link: '/dummy-info',
                             text: 'Polityka prywatności',
                         },
                         {
-                            link: '/pytania',
+                            link: '/dummy-info',
                             text: 'Najczęściej zadawane pytania',
                         },
                     ]}
@@ -39,16 +40,14 @@ export default function Footer(props) {
                 <CustomFooterLinkBox
                     tittle="Pomoc"
                     links={[
-                        { link: '/kontakt', text: 'Kontakt' },
-                        { link: '/regulamin', text: 'Regulamin' },
-                        { link: '/zwroty', text: 'Zwroty' },
+                        { link: '/dummy-info', text: 'Kontakt' },
+                        { link: '/dummy-info', text: 'Regulamin' },
+                        { link: '/dummy-info', text: 'Zwroty' },
                     ]}
                 />
                 <CustomFooterLinkBox
                     tittle="Dostawa"
-                    links={[
-                        { link: '/koszty-dostawy', text: 'Koszty dostawy' },
-                    ]}
+                    links={[{ link: '/dummy-info', text: 'Koszty dostawy' }]}
                 />
             </FooterContainer>
             <Copyrights />

@@ -1,7 +1,11 @@
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCustomSnackbar } from '../../store/CustomSnackbarContext';
 import OrderButton from '../UI/CustomButton';
 
 const OrderCostContainer = styled(Box)({
@@ -61,11 +65,40 @@ const OrderItemDescription = styled(Box)({
 });
 
 export default function CartItems({ cartCon, totalAmount }) {
+    const customSnackbar = useCustomSnackbar();
+    const navigate = useNavigate();
+    const checkout = useMutation({
+        mutationFn: async () => {
+            try {
+                return await axios.post(`/api/stripe/create-checkout-session`, {
+                    cartItems: cartCon.products,
+                });
+            } catch (error) {
+                throw error;
+            }
+        },
+        onSuccess: (data) => {
+            cartCon.clearCart();
+            window.location.replace(data.data.url);
+        },
+        onError: (error) => {
+            if (error.response.status === 401) {
+                navigate('/login');
+                customSnackbar.show(
+                    'error',
+                    'Aby stworzyć zamówienie, musisz się zalogować'
+                );
+                return;
+            }
+            customSnackbar.show('error', error.response.data.message);
+        },
+    });
+
     return (
         <>
             <OrderItemsContainer>
-                {cartCon.products.map((product) => (
-                    <OrderItem key={product.id}>
+                {cartCon.products.map((product, index) => (
+                    <OrderItem key={`${product.id}${index}`}>
                         <OrderItemTitle>
                             <Typography variant="h6">
                                 {product.brand}
@@ -73,7 +106,7 @@ export default function CartItems({ cartCon, totalAmount }) {
                             <IconButton
                                 onClick={cartCon.removeProduct.bind(
                                     null,
-                                    product.id
+                                    index
                                 )}
                             >
                                 <DeleteForeverIcon color="secondary" />
@@ -105,6 +138,7 @@ export default function CartItems({ cartCon, totalAmount }) {
                 color="secondary"
                 value="Do kasy"
                 fullWidth
+                onClick={checkout.mutate}
             />
         </>
     );

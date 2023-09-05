@@ -9,11 +9,12 @@ import logo from './../../assets/logo.png';
 import theme from './../../theme/theme';
 export default function AdminPanel() {
     return (
-        <Container maxWidth={false} disableGutters style={{ height: '100vh' }}>
+        <Container maxWidth={false} disableGutters sx={{ height: '100vh' }}>
             <Grid
                 container
                 backgroundColor={theme.palette.primary.main}
                 height="100%"
+                overflow="auto"
             >
                 <Grid item xs={12} sm={4} md={4} lg={2}>
                     <Link
@@ -35,7 +36,7 @@ export default function AdminPanel() {
                             container
                             item
                             component={Link}
-                            to="/admin/panel"
+                            to="/admin"
                             className="link-container"
                         >
                             <DashboardIcon />
@@ -45,7 +46,7 @@ export default function AdminPanel() {
                             container
                             item
                             component={Link}
-                            to="/admin/uzytkownicy"
+                            to="/admin/users"
                             className="link-container"
                         >
                             <PeopleIcon />
@@ -55,7 +56,7 @@ export default function AdminPanel() {
                             container
                             item
                             component={Link}
-                            to="/admin/produkty"
+                            to="/admin/products"
                             className="link-container"
                         >
                             <ShoppingCartIcon />
@@ -65,7 +66,7 @@ export default function AdminPanel() {
                             container
                             item
                             component={Link}
-                            to="/admin/zamowienia"
+                            to="/admin/orders"
                             className="link-container"
                         >
                             <AssignmentIcon />
@@ -78,6 +79,7 @@ export default function AdminPanel() {
                     alignItems="center"
                     justifyContent="center"
                     backgroundColor={theme.palette.primary.light}
+                    sx={{ position: 'relative' }}
                     p={3}
                     xs={12}
                     sm={8}

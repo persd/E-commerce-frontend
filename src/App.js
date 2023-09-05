@@ -3,8 +3,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import axios from 'axios';
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import ErrorPage from './ErrorPage';
-import SearchBar from './components/NavBar/SearchBar';
 import Layout from './layouts/Layout';
 import ProductPage from './layouts/Main/ProductPage/ProductPage';
 import Account from './pages/Account/Account';
@@ -16,10 +14,9 @@ import Panel from './pages/AdminPanel/subPages/Panel';
 import Products from './pages/AdminPanel/subPages/Products';
 import Users from './pages/AdminPanel/subPages/Users';
 import Home from './pages/Home';
-import Kids from './pages/Kids';
 import Login from './pages/Login/Login';
-import Man from './pages/Man';
-import Woman from './pages/Woman';
+import SearchProducts from './pages/SearchProducts/SearchProducts';
+import ShopInfo from './pages/ShopInfo';
 import { CustomSnackbarProvider } from './store/CustomSnackbarContext';
 import { UserContextProvider } from './store/UserContext';
 const queryClient = new QueryClient();
@@ -34,19 +31,10 @@ export default function App() {
                 {
                     path: '/',
                     element: <Home />,
-                    errorElement: <ErrorPage />,
                 },
                 {
-                    path: 'kobieta',
-                    element: <Woman />,
-                },
-                {
-                    path: 'mezczyzna',
-                    element: <Man />,
-                },
-                {
-                    path: 'dzieci',
-                    element: <Kids />,
+                    path: 'search',
+                    element: <SearchProducts />,
                 },
                 {
                     path: 'account',
@@ -55,44 +43,39 @@ export default function App() {
                         {
                             path: 'info',
                             element: <UserData />,
-                            errorElement: <ErrorPage />,
                         },
                         {
                             path: 'orders',
                             element: <UserOrders />,
-                            errorElement: <ErrorPage />,
                         },
                     ],
                 },
                 { path: 'product/:id', element: <ProductPage /> },
+                { path: 'dummy-info', element: <ShopInfo /> },
             ],
         },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Login /> },
-        { path: 'szukaj', element: <SearchBar /> },
+
         {
             element: <AdminPanel />,
             path: 'admin',
             children: [
                 {
-                    path: 'panel',
+                    path: '',
                     element: <Panel />,
-                    errorElement: <ErrorPage />,
                 },
                 {
-                    path: 'uzytkownicy',
+                    path: 'users',
                     element: <Users />,
-                    errorElement: <ErrorPage />,
                 },
                 {
-                    path: 'produkty',
+                    path: 'products',
                     element: <Products />,
-                    errorElement: <ErrorPage />,
                 },
                 {
-                    path: 'zamowienia',
+                    path: 'orders',
                     element: <Orders />,
-                    errorElement: <ErrorPage />,
                 },
             ],
         },

@@ -1,10 +1,12 @@
 import { Divider, Typography, styled } from '@mui/material';
 import Box from '@mui/material/Box';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import React from 'react';
+import { React } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
+import Loader from '../../components/UI/Loader';
+import { useCustomSnackbar } from '../../store/CustomSnackbarContext';
 const LinkContainer = styled(Box)({
     display: 'flex',
     padding: '1.5rem',
@@ -25,6 +27,26 @@ const StyledLink = styled(Link, {
 export default function Account() {
     const { pathname: activeTab } = useLocation();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const customSnackbar = useCustomSnackbar();
+    const editUserPersonalData = useMutation({
+        mutationFn: async (formData) => {
+            try {
+                return await axios.put('/api/account/info/edit', {
+                    ...formData,
+                });
+            } catch (error) {
+                throw error;
+            }
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries(['account']);
+            customSnackbar.show('success', data.data.message);
+        },
+        onError: (error) => {
+            customSnackbar.show('error', error.response.data.message);
+        },
+    });
 
     const { data, isLoading } = useQuery({
         queryKey: ['account'],
@@ -32,10 +54,12 @@ export default function Account() {
             return await axios.get(`/api/account/info`);
         },
         onError: () => {
-            navigate('/');
+            navigate('/login');
         },
         onSuccess: () => {},
+        retry: false,
     });
+    if (isLoading) return <Loader />;
     return (
         <Box sx={{ width: '100%' }}>
             <LinkContainer>
@@ -53,7 +77,13 @@ export default function Account() {
                 </StyledLink>
             </LinkContainer>
             <Divider />
-            {!isLoading && <Outlet context={{ data: data?.data, isLoading }} />}
+            <Outlet
+                context={{
+                    data: data?.data,
+                    isLoading,
+                    editUserPersonalData,
+                }}
+            />
         </Box>
     );
 }

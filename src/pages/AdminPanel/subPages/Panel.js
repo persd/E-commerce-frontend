@@ -2,7 +2,11 @@ import { MonetizationOn, PeopleAlt } from '@mui/icons-material';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { Box, Paper, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../../../components/UI/Loader';
 
 const PanelPaper = ({ children, ...props }) => (
     <Paper {...props} elevation={10}>
@@ -28,11 +32,19 @@ const PanelPaperIcon = styled('div')({
 });
 
 export default function Panel() {
-    const orderCount = 10;
-    const orderValue = 1500;
-    const totalCustomers = 200;
-    const averageOrderValue = orderValue / orderCount;
-
+    const navigate = useNavigate();
+    const { data, isLoading } = useQuery({
+        queryKey: ['stats'],
+        queryFn: async () => {
+            return await axios.get(`/api/account/info/stats`);
+        },
+        onError: () => {
+            navigate('/');
+        },
+        retry: false,
+    });
+    const stats = data?.data || '';
+    if (isLoading) return <Loader />;
     return (
         <PanelPaperBody
             sx={{
@@ -58,7 +70,7 @@ export default function Panel() {
                     <PanelPaperIcon>
                         <PeopleAlt />
                     </PanelPaperIcon>
-                    <PanelPaperText title="3" />
+                    <PanelPaperText title={stats.usersAmount} />
                 </PanelPaperBody>
             </PanelPaper>
             <PanelPaper>
@@ -67,7 +79,7 @@ export default function Panel() {
                     <PanelPaperIcon>
                         <BarChartIcon />
                     </PanelPaperIcon>
-                    <PanelPaperText title="2" />
+                    <PanelPaperText title={stats.ordersAmount} />
                 </PanelPaperBody>
             </PanelPaper>
             <PanelPaper>
@@ -77,16 +89,15 @@ export default function Panel() {
                         <MonetizationOn />
                     </PanelPaperIcon>
                     <PanelPaperText
-                        title={`${Number(orderValue).toLocaleString('en-EN', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        })} zł`}
+                        title={`${Number(stats.totalOrdersValue).toLocaleString(
+                            'en-EN',
+                            {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }
+                        )} zł`}
                     />
                 </PanelPaperBody>
-            </PanelPaper>
-            <PanelPaper sx={{ gridColumn: 'span 3' }}>
-                <PanelPaperText title="chart" />
-                <PanelPaperBody></PanelPaperBody>
             </PanelPaper>
         </PanelPaperBody>
     );

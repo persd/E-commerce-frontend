@@ -12,7 +12,7 @@ export default function CustomFooterLinkBox(props) {
             <Typography variant="h6">{props.tittle}</Typography>
             {props.links.map(({ link, text }) => (
                 <Typography
-                    key={link}
+                    key={`${link}${text}`}
                     component={Link}
                     to={link}
                     variant="body2"

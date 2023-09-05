@@ -1,5 +1,8 @@
 import { Box, Button, TextField, Typography, styled } from '@mui/material';
+import { useFormik } from 'formik';
 import React, { useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import { userDataValidationSchema } from '../../../components/Validation/validationSchemas';
 const UserDataBox = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
@@ -18,15 +21,30 @@ const ActionContainer = styled(Box)({
     gap: '2rem',
 });
 export default function ChangeUserEmail() {
+    const { data, editUserPersonalData } = useOutletContext();
+
     const [showEditEmail, setShowEditEmail] = useState(false);
     const showEditEmailHandler = () => {
         setShowEditEmail((prev) => !prev);
     };
+    const formik = useFormik({
+        initialValues: {
+            email: data?.email || '',
+        },
+        validationSchema: userDataValidationSchema,
+        onSubmit: (values) => {
+            onSave(values);
+        },
+    });
+    const onSave = (values) => {
+        editUserPersonalData.mutate(values);
+    };
+
     return (
         <UserDataBox>
             <UserAcutalData>
                 <Typography variant="h5">Twój adres email:</Typography>
-                <Typography variant="h5">asdasd@sadas.pl</Typography>
+                <Typography variant="h5">{data?.email}</Typography>
                 {!showEditEmail && (
                     <Button variant="contained" onClick={showEditEmailHandler}>
                         Edytuj
@@ -34,29 +52,28 @@ export default function ChangeUserEmail() {
                 )}
             </UserAcutalData>
             {showEditEmail && (
-                <form>
+                <form onSubmit={formik.handleSubmit} autoComplete="off">
                     <Typography variant="h5">Zmień adres e-mail</Typography>
 
                     <TextField
-                        id="newEmail"
-                        name="newEmail"
+                        id="email"
+                        name="email"
                         type="email"
                         label="Nowy adres email"
                         variant="outlined"
                         margin="normal"
                         fullWidth
                         required
+                        value={formik.values.email}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        error={
+                            formik.touched.email &&
+                            Boolean(!!formik.errors.email)
+                        }
+                        helperText={formik.touched.email && formik.errors.email}
                     />
-                    <TextField
-                        id="password"
-                        name="password"
-                        type="password"
-                        label="Podaj hasło do konta"
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
-                        required
-                    />
+
                     <ActionContainer>
                         <Button type="submit" variant="contained">
                             Zapisz

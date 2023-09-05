@@ -3,7 +3,7 @@ import { Grid, Typography, styled } from '@mui/material';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import loginImage from './../../assets/login.png';
-import loginBackground from './../../assets/loginBackground.jpg';
+import loginBackground from './../../assets/loginBackground.webp';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 
