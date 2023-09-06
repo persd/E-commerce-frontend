@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import React from 'react';
-import Slider from '../components/UI/Slider';
+import Slider from '../../components/UI/Slider';
 
 export default function Home() {
     return (

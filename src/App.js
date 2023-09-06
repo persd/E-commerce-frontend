@@ -9,14 +9,16 @@ import Account from './pages/Account/Account';
 import UserData from './pages/Account/UserData/UserData';
 import UserOrders from './pages/Account/UserOrders/UserOrders';
 import AdminPanel from './pages/AdminPanel/AdminPanel';
-import Orders from './pages/AdminPanel/subPages/Orders';
-import Panel from './pages/AdminPanel/subPages/Panel';
-import Products from './pages/AdminPanel/subPages/Products';
-import Users from './pages/AdminPanel/subPages/Users';
-import Home from './pages/Home';
+
+import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import SearchProducts from './pages/SearchProducts/SearchProducts';
-import ShopInfo from './pages/ShopInfo';
+
+import Orders from './pages/Account/UserOrders/UserOrders';
+import Panel from './pages/AdminPanel/Panel/Panel';
+import ShopInfo from './pages/AdminPanel/Panel/ShopInfo';
+import Products from './pages/AdminPanel/Produckts/Products';
+import Users from './pages/AdminPanel/Users/Users';
 import { CustomSnackbarProvider } from './store/CustomSnackbarContext';
 import { UserContextProvider } from './store/UserContext';
 const queryClient = new QueryClient();

@@ -69,16 +69,18 @@ export default function Products() {
     }));
 
     const columns = [
-        { field: 'id', headerName: 'ID', flex: 1 },
+        { field: 'id', headerName: 'ID', flex: 1, editable: false },
         {
             field: 'name',
             headerName: 'Name',
             flex: 1,
+            editable: false,
         },
         {
             field: 'images',
             headerName: 'Image',
             flex: 2,
+            editable: false,
             renderCell: (params) => (
                 <img
                     src={params.value[0]}
@@ -91,20 +93,24 @@ export default function Products() {
             field: 'brand',
             headerName: 'Brand',
             flex: 1,
+            editable: false,
         },
         {
             field: 'category',
             headerName: 'Category',
             flex: 1,
+            editable: false,
         },
         {
             field: 'price',
             headerName: 'Price',
             flex: 1,
+            editable: false,
         },
         {
             field: 'action',
             headerName: 'Action',
+            editable: false,
             renderCell: (params) => (
                 <DeleteIcon
                     sx={{ cursor: 'pointer' }}
